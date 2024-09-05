@@ -10,6 +10,7 @@ public class TaskBoardBackEndApplication {
 		SpringApplication.run(TaskBoardBackEndApplication.class, args);
 	}
 
-	//TODO: CORREGIR LOS ROLES AL MOMENTO DE REGISTRARLOS
+	//TODO🆗: CORREGIR LOS ROLES AL MOMENTO DE REGISTRARLOS
+	//TODO: ELIMINAR TODOS LOS USUARIOS QUE NO TENGAN LOS PERMISOS DE ROL
 
 }

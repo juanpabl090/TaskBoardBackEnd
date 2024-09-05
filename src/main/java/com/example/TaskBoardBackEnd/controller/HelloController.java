@@ -1,14 +1,24 @@
 package com.example.TaskBoardBackEnd.controller;
 
+import com.example.TaskBoardBackEnd.model.RoleEntity;
+import com.example.TaskBoardBackEnd.repository.RoleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping
 public class HelloController {
+    private final RoleRepository roleRepository;
 
-    @GetMapping("/home")
-    public String homePage() {
-        return "Home Page";
+    @Autowired
+    public HelloController(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
+
+    @GetMapping("/home/{id}")
+    public RoleEntity homePage(@PathVariable Long id) {
+        RoleEntity roleName = roleRepository.findRoleNameById(id);
+        return roleName;
     }
 
     @GetMapping("/greetingAuth")

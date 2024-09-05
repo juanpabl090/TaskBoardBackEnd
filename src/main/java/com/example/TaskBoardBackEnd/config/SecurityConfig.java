@@ -42,10 +42,10 @@ public class SecurityConfig {
                             request.requestMatchers(HttpMethod.GET, "/testUser").hasAnyRole("USER");
                             request.requestMatchers(HttpMethod.GET, "/testAdmin").hasAnyRole("ADMIN");
 
-                            request.requestMatchers(HttpMethod.GET, "/testGet").hasAnyAuthority("GET");
-                            request.requestMatchers(HttpMethod.POST, "/testPOST").hasAnyAuthority("POST");
+                            request.requestMatchers(HttpMethod.GET, "/testGet").hasAnyAuthority("READ");
+                            request.requestMatchers(HttpMethod.POST, "/testPOST").hasAnyAuthority("CREATE");
                             request.requestMatchers(HttpMethod.DELETE, "/testDELETE").hasAnyAuthority("DELETE");
-                            request.requestMatchers(HttpMethod.PUT, "/testPUT").hasAnyAuthority("PUT");
+                            request.requestMatchers(HttpMethod.PUT, "/testPUT").hasAnyAuthority("UPDATE");
 
                             request.requestMatchers(HttpMethod.POST, "/register").permitAll();
 
