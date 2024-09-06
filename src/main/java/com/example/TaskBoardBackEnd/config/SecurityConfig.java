@@ -4,7 +4,6 @@ package com.example.TaskBoardBackEnd.config;
 import com.example.TaskBoardBackEnd.service.UserDetailServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,8 +12,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,33 +27,33 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(
                         request -> {
-                            request.requestMatchers(HttpMethod.GET,
-                                    "/home",
-                                    "/greetingAuth",
-                                    "/users").authenticated();
-
-                            request.requestMatchers(HttpMethod.GET, "/testUser").hasAnyRole("USER");
-                            request.requestMatchers(HttpMethod.GET, "/testAdmin").hasAnyRole("ADMIN");
-
-                            request.requestMatchers(HttpMethod.GET, "/testGet").hasAnyAuthority("READ");
-                            request.requestMatchers(HttpMethod.POST, "/testPOST").hasAnyAuthority("CREATE");
-                            request.requestMatchers(HttpMethod.DELETE, "/testDELETE").hasAnyAuthority("DELETE");
-                            request.requestMatchers(HttpMethod.PUT, "/testPUT").hasAnyAuthority("UPDATE");
-
-                            request.requestMatchers(HttpMethod.POST, "/register").permitAll();
-
+                            request.requestMatchers("/auth/**", "/public/**").permitAll();
+                            request.requestMatchers("/hello").authenticated();
+                            request.requestMatchers("/userPages/**").hasAnyAuthority("USER");
+                            request.requestMatchers("/adminPages/**").hasAnyAuthority("ADMIN");
                             request.anyRequest().authenticated();
                         }
-                )
-                .formLogin(FormLoginConfigurer::permitAll)
-                .logout(LogoutConfigurer::permitAll)
-                .build();
+                )/*
+                .formLogin(login -> login
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/hello", true)
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .deleteCookies("JSESSIONID", "remember-me")
+                        .invalidateHttpSession(true)
+                        .permitAll()
+                */
+                .formLogin(login -> login.permitAll().defaultSuccessUrl("/hello", true))
+                .logout(LogoutConfigurer::permitAll);
+        return http.build();
     }
 
     @Bean
@@ -74,6 +73,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
 }

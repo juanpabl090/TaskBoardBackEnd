@@ -40,7 +40,7 @@ public class UserService {
                 .userName(userRegisterDto.getUserName())
                 .email(userRegisterDto.getEmail())
                 .password(passwordEncoder.encode(userRegisterDto.getPassword()))
-                .roles(Set.of(findRoleById(9L)))
+                .roles(Set.of(findRoleById(10L)))
                 .build();
         userRepository.save(user);
     }
