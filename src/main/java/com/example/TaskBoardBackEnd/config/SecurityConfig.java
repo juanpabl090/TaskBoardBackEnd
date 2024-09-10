@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -33,25 +32,17 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(
                         request -> {
-                            request.requestMatchers("/auth/**", "/public/**").permitAll();
-                            request.requestMatchers("/hello").authenticated();
-                            request.requestMatchers("/userPages/**").hasAnyAuthority("USER");
-                            request.requestMatchers("/adminPages/**").hasAnyAuthority("ADMIN");
+                            request.requestMatchers("/register").permitAll();
+                            request.requestMatchers("/hello", "/users").authenticated();
                             request.anyRequest().authenticated();
                         }
-                )/*
-                .formLogin(login -> login
+                )
+                .formLogin(login -> login.
+                        permitAll()
                         .loginPage("/login")
-                        .defaultSuccessUrl("/hello", true)
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
-                        .deleteCookies("JSESSIONID", "remember-me")
-                        .invalidateHttpSession(true)
-                        .permitAll()
-                */
-                .formLogin(login -> login.permitAll().defaultSuccessUrl("/hello", true))
+                        .defaultSuccessUrl("/hello")
+                        .failureUrl("/login?error=true")
+                        .loginProcessingUrl("/login"))
                 .logout(LogoutConfigurer::permitAll);
         return http.build();
     }
