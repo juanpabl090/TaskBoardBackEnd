@@ -69,7 +69,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     public ResponseEntity<AuthResponseDto> registerUser(@Valid @RequestBody UserRegisterDto userRegisterDto) {
         if (userRepository.findUserByUserName(userRegisterDto.userName()).isPresent()
-                && userRepository.findUserByEmail(userRegisterDto.email()).isPresent()) {
+                || userRepository.findUserByEmail(userRegisterDto.email()).isPresent()) {
             throw new Error("User already exists");
         }
         User user = User.builder()
@@ -95,9 +95,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userSaved, null, authorities);
 
-        String accessToken = jwtUtils.createToken(authentication);
-
-        AuthResponseDto authResponseDto = new AuthResponseDto(authentication.getPrincipal().toString(), "User created", accessToken, true);
+        AuthResponseDto authResponseDto = new AuthResponseDto(authentication.getPrincipal().toString(), "User created", null, true);
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponseDto);
     }
 

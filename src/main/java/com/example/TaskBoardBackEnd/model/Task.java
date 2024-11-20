@@ -35,4 +35,5 @@ public class Task {
     private LocalDate createdAt;
     private LocalDate UpdatedAt;
     private String iconFileName;
+    private boolean isDeleted;
 }

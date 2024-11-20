@@ -9,6 +9,7 @@ import com.example.TaskBoardBackEnd.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -58,8 +59,9 @@ public class TaskService {
     }
 
     public ResponseEntity<List<TaskReqResDto>> getAllTasksById(Long id) {
-        List<Task> task = taskRepository.findTasksByUserId(id);
-        Optional<List<TaskReqResDto>> taskDto = Optional.of(task.stream()
+        List<Task> tasks = taskRepository.findTasksByUserId(id);
+        Optional<List<TaskReqResDto>> taskDto = Optional.of(tasks.stream()
+                .filter(task -> !task.isDeleted())
                 .map(TaskService::convertToDto)
                 .collect(Collectors.toList()));
         return ResponseEntity.of(taskDto);
@@ -84,5 +86,15 @@ public class TaskService {
         Task savedTask = taskRepository.save(existingTask);
         TaskReqResDto taskReqResDto = convertToDto(savedTask);
         return ResponseEntity.ok(taskReqResDto);
+    }
+
+    @Transactional
+    public ResponseEntity<Void> deleteById(Long idTask) {
+        Task existingTask = taskRepository.findById(idTask).orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        if (!existingTask.isDeleted()) {
+            existingTask.setDeleted(true);
+            taskRepository.save(existingTask);
+        }
+        return ResponseEntity.ok().build();
     }
 }
