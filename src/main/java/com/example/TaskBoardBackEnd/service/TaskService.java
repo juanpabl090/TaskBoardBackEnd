@@ -69,7 +69,6 @@ public class TaskService {
 
     public ResponseEntity<TaskReqResDto> editTasks(Task task, Long idTask) {
         Task existingTask = taskRepository.findById(idTask).orElseThrow(() -> new EntityNotFoundException("Task not found"));
-        System.out.println("Estado recibido" + task.getETaskStatus());
         if (task.getTitle() != null && !task.getTitle().isEmpty()) {
             existingTask.setTitle(task.getTitle());
         }
